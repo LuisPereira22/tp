@@ -1,3 +1,7 @@
+/**
+ * @file funcoes.c
+ * @brief Conjunto de funções para manipulação de ficheiros e diretórios em C.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -13,7 +17,12 @@
 
 #define BUFFER_SIZE 1024
 
-// Comando a) mostra ficheiro
+
+/**
+ * @brief Mostra o conteúdo de um ficheiro no terminal.
+ * 
+ * @param filename Nome do ficheiro a ser exibido.
+ */
 void mostra_ficheiro(const char *filename) {
     int fd = open(filename, O_RDONLY);
     if (fd == -1) {
@@ -25,13 +34,24 @@ void mostra_ficheiro(const char *filename) {
     ssize_t bytes_read;
 
     while ((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0) {
-        write(STDOUT_FILENO, buffer, bytes_read);
+        if(write(STDOUT_FILENO, buffer, bytes_read) != bytes_read){
+            perror("Erro de escrita");
+            break;
+        }
+    }
+    if(bytes_read == -1)
+    {
+        perror("Erro de leitura");
     }
 
     close(fd);
 }
 
-// Comando b) copia ficheiro
+/**
+ * @brief Copia um ficheiro para outro com a extensão ".copia".
+ * 
+ * @param filename Nome do ficheiro de origem.
+ */
 void copia_ficheiro(const char *filename) {
     int src_fd = open(filename, O_RDONLY);
     if (src_fd == -1) {
@@ -63,7 +83,12 @@ void copia_ficheiro(const char *filename) {
     close(dest_fd);
 }
 
-// Comando c) acrescenta origem destino
+/**
+ * @brief Acrescenta o conteúdo de um ficheiro (origem) no fim de outro (destino).
+ * 
+ * @param origem Nome do ficheiro de origem.
+ * @param destino Nome do ficheiro de destino.
+ */
 void acrescenta_ficheiros(const char *origem, const char *destino) {
     int src_fd = open(origem, O_RDONLY);
     if (src_fd == -1) {
@@ -92,6 +117,11 @@ void acrescenta_ficheiros(const char *origem, const char *destino) {
     close(dest_fd);
 }
 
+/**
+ * @brief Conta o número de linhas de um ficheiro.
+ * 
+ * @param filename Nome do ficheiro a ser analisado.
+ */
 void conta_linhas(const char *filename) {
     int fd = open(filename, O_RDONLY);
     if (fd == -1) {
@@ -124,14 +154,22 @@ void conta_linhas(const char *filename) {
     close(fd);
 }
 
-// Comando e) apaga ficheiro
+/**
+ * @brief Apaga um ficheiro do sistema de ficheiros.
+ * 
+ * @param filename Nome do ficheiro a ser apagado.
+ */
 void apaga_ficheiro(const char *filename) {
     if (unlink(filename) == -1) {
         perror("Erro ao apagar ficheiro");
     }
 }
 
-// Comando f) informa ficheiro
+/**
+ * @brief Mostra informações detalhadas sobre um ficheiro, incluindo tipo, i-node, dono e datas.
+ * 
+ * @param filename Nome do ficheiro a ser informado.
+ */
 void informa_ficheiro(const char *filename) {
     struct stat file_stat;
     if (stat(filename, &file_stat) == -1) {
@@ -164,7 +202,11 @@ void informa_ficheiro(const char *filename) {
     printf("Última alteração de estado: %s", ctime(&file_stat.st_ctime));
 }
 
-// Comando g) lista [directoria]
+/**
+ * @brief Lista o conteúdo de uma diretoria especificada (ou a atual, se nulo).
+ * 
+ * @param dirname Nome da diretoria a listar (ou NULL para diretoria atual).
+ */
 void lista_diretoria(const char *dirname) {
     DIR *dir;
     struct dirent *entry;

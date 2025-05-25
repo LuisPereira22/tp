@@ -1,7 +1,19 @@
+/**
+ * @file interpretador.c
+ * @brief Implementa um interpretador de comandos com suporte a comandos internos e externos.
+ */
 #include "so.h"
 #include <stdbool.h>
 
-// Função para executar um comando
+/**
+ * @brief Executa um comando externo utilizando fork e execvp.
+ * 
+ * Esta função cria um processo filho para executar um comando do sistema.
+ * 
+ * @param comando Nome do comando a ser executado.
+ * @param argumentos Vetor de argumentos para o comando, incluindo o próprio comando como o primeiro argumento.
+ * @return int Código de saída do processo filho, ou -1 em caso de erro.
+ */
 int executar_comando(char *comando, char **argumentos) {
     pid_t pid = fork();
     
@@ -26,7 +38,21 @@ int executar_comando(char *comando, char **argumentos) {
     }
 }
 
-// Interpretador principal
+/**
+ * @brief Interpretador interativo de comandos.
+ * 
+ * Este interpretador reconhece comandos internos como:
+ * - mostra \<ficheiro>
+ * - copia \<ficheiro>
+ * - acrescenta \<origem> \<destino>
+ * - conta \<ficheiro>
+ * - apaga \<ficheiro>
+ * - informa \<ficheiro>
+ * - lista [\<diretoria>]
+ * 
+ * Comandos não reconhecidos são tratados como comandos externos (executados com execvp).
+ * O comando "termina" encerra o interpretador.
+ */
 void interpretador() {
     char linha[1024];
     char *comando = NULL;
@@ -135,6 +161,11 @@ void interpretador() {
     }
 }
 
+/**
+ * @brief Função principal. Inicia o interpretador de comandos.
+ * 
+ * @return int Código de retorno da aplicação (0 para sucesso).
+ */
 int main() {
     interpretador();
     return 0;
